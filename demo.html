@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>超级做题家 - 演示版本</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .demo-notice {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            color: white;
+            text-align: center;
+        }
+
+        .demo-notice h3 {
+            margin-bottom: 10px;
+            color: #ffd700;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .feature-card p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .demo-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .demo-section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .demo-section h2 i {
+            color: #667eea;
+        }
+
+        .upload-demo {
+            border: 3px dashed #667eea;
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            margin-bottom: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .upload-demo:hover {
+            border-color: #764ba2;
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        .upload-demo i {
+            font-size: 4rem;
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+
+        .quiz-demo {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .quiz-type {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .quiz-type:hover {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .quiz-type i {
+            font-size: 2.5rem;
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-card i {
+            font-size: 2.5rem;
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .stat-card h3 {
+            font-size: 2rem;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .stat-card p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .install-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .install-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .install-step {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+        }
+
+        .install-step .step-number {
+            background: #667eea;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            font-weight: bold;
+        }
+
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .footer {
+            text-align: center;
+            color: white;
+            margin-top: 40px;
+            opacity: 0.8;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .quiz-demo {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 头部 -->
+        <div class="header">
+            <h1><i class="fas fa-graduation-cap"></i> 超级做题家</h1>
+            <p>AI驱动的智能学习辅助工具 - 演示版本</p>
+        </div>
+
+        <!-- 演示说明 -->
+        <div class="demo-notice">
+            <h3><i class="fas fa-info-circle"></i> 演示说明</h3>
+            <p>这是超级做题家的静态演示版本，展示了应用的主要功能和界面设计。</p>
+            <p>要体验完整功能，请按照下方安装指南部署完整版本。</p>
+        </div>
+
+        <!-- 功能特色 -->
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <h3>智能题目生成</h3>
+                <p>基于您的学习材料，AI自动生成填空题、选择题、问答题，个性化定制学习内容。</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <h3>自动批改讲解</h3>
+                <p>AI自动批改答题结果，提供详细的解题思路和知识点讲解，即时反馈学习效果。</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h3>学习数据分析</h3>
+                <p>实时跟踪学习进度，分析知识点掌握情况，提供个性化学习建议。</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-redo"></i>
+                </div>
+                <h3>错题强化练习</h3>
+                <p>智能收集错题，生成针对性练习，帮您攻克薄弱环节，提高学习效率。</p>
+            </div>
+        </div>
+
+        <!-- 上传材料演示 -->
+        <div class="demo-section">
+            <h2><i class="fas fa-cloud-upload-alt"></i> 上传学习材料</h2>
+            <div class="upload-demo" onclick="showAlert('上传功能演示', '在完整版本中，您可以上传PPT、PDF、Word、图片等格式的学习材料，AI会自动分析内容并生成题目。')">
+                <i class="fas fa-file-upload"></i>
+                <h3>拖拽文件到此处或点击上传</h3>
+                <p>支持 PPT、PDF、Word、图片等格式</p>
+            </div>
+            <p><strong>支持的文件格式：</strong> PDF、DOC/DOCX、PPT/PPTX、TXT、JPG/PNG</p>
+        </div>
+
+        <!-- 练习模式演示 -->
+        <div class="demo-section">
+            <h2><i class="fas fa-pencil-alt"></i> 练习模式</h2>
+            <div class="quiz-demo">
+                <div class="quiz-type" onclick="showAlert('填空练习', '根据学习材料生成填空题，巩固关键知识点。AI会智能选择重要概念作为填空内容。')">
+                    <i class="fas fa-edit"></i>
+                    <h3>填空练习</h3>
+                    <p>巩固关键知识点</p>
+                </div>
+                
+                <div class="quiz-type" onclick="showAlert('选择题练习', '生成多选题和单选题，快速检验理解程度。包含智能干扰项设计。')">
+                    <i class="fas fa-list-ul"></i>
+                    <h3>选择题练习</h3>
+                    <p>快速检验理解</p>
+                </div>
+                
+                <div class="quiz-type" onclick="showAlert('问答题练习', '开放性问题练习，训练深度理解和表达能力。AI提供智能评分和改进建议。')">
+                    <i class="fas fa-file-alt"></i>
+                    <h3>问答题练习</h3>
+                    <p>深度理解训练</p>
+                </div>
+                
+                <div class="quiz-type" onclick="showAlert('模拟考试', '综合性模拟试卷，全面检测学习效果。包含时间限制和完整评分体系。')">
+                    <i class="fas fa-clipboard-check"></i>
+                    <h3>模拟考试</h3>
+                    <p>全面检测效果</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 学习统计演示 -->
+        <div class="demo-section">
+            <h2><i class="fas fa-chart-bar"></i> 学习统计</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <i class="fas fa-trophy"></i>
+                    <h3>85.6</h3>
+                    <p>平均分数</p>
+                </div>
+                
+                <div class="stat-card">
+                    <i class="fas fa-tasks"></i>
+                    <h3>24</h3>
+                    <p>完成练习</p>
+                </div>
+                
+                <div class="stat-card">
+                    <i class="fas fa-fire"></i>
+                    <h3>7</h3>
+                    <p>连续学习天数</p>
+                </div>
+                
+                <div class="stat-card">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <h3>12</h3>
+                    <p>待复习错题</p>
+                </div>
+            </div>
+            <p><em>* 以上为演示数据，完整版本提供实时学习统计和可视化图表</em></p>
+        </div>
+
+        <!-- 安装指南 -->
+        <div class="install-section">
+            <h2><i class="fas fa-download"></i> 安装完整版本</h2>
+            <div class="install-steps">
+                <div class="install-step">
+                    <div class="step-number">1</div>
+                    <h3>安装 Node.js</h3>
+                    <p>访问 nodejs.org 下载并安装 Node.js LTS 版本</p>
+                </div>
+                
+                <div class="install-step">
+                    <div class="step-number">2</div>
+                    <h3>安装依赖</h3>
+                    <p>在项目目录执行 npm install 安装所需依赖包</p>
+                </div>
+                
+                <div class="install-step">
+                    <div class="step-number">3</div>
+                    <h3>启动应用</h3>
+                    <p>执行 npm start 或双击 start.bat 启动应用</p>
+                </div>
+                
+                <div class="install-step">
+                    <div class="step-number">4</div>
+                    <h3>访问应用</h3>
+                    <p>打开浏览器访问 http://localhost:3000</p>
+                </div>
+            </div>
+            
+            <div style="margin-top: 30px;">
+                <h3>快速安装命令：</h3>
+                <div class="code-block">
+# 安装依赖<br>
+npm install<br><br>
+# 启动应用<br>
+npm start<br><br>
+# 或者使用启动脚本<br>
+# Windows: 双击 start.bat<br>
+# Linux/macOS: ./start.sh
+                </div>
+            </div>
+            
+            <div style="text-align: center; margin-top: 20px;">
+                <button class="btn" onclick="showAlert('安装帮助', '详细安装说明请查看项目中的 INSTALL.md 文件，或访问项目GitHub页面获取最新安装指南。')">
+                    <i class="fas fa-book"></i> 查看详细安装指南
+                </button>
+            </div>
+        </div>
+
+        <!-- 技术特性 -->
+        <div class="demo-section">
+            <h2><i class="fas fa-cogs"></i> 技术特性</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-server"></i>
+                    </div>
+                    <h3>后端架构</h3>
+                    <p>Node.js + Express + SQLite3，轻量级高性能架构</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h3>AI集成</h3>
+                    <p>支持本地LLM模型，保护数据隐私，离线可用</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h3>响应式设计</h3>
+                    <p>适配桌面端和移动端，随时随地学习</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3>数据安全</h3>
+                    <p>本地存储，数据加密，保护学习隐私</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 页脚 -->
+        <div class="footer">
+            <p>&copy; 2024 超级做题家 - AI学习辅助工具</p>
+            <p>让AI助力你的学习之旅！ 🎓✨</p>
+        </div>
+    </div>
+
+    <script>
+        function showAlert(title, message) {
+            alert(title + '\n\n' + message);
+        }
+
+        // 添加一些交互效果
+        document.addEventListener('DOMContentLoaded', function() {
+            // 为所有卡片添加点击效果
+            const cards = document.querySelectorAll('.feature-card, .quiz-type, .stat-card');
+            cards.forEach(card => {
+                card.addEventListener('click', function() {
+                    this.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        this.style.transform = '';
+                    }, 150);
+                });
+            });
+
+            // 添加滚动动画
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver(function(entries) {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, observerOptions);
+
+            // 为所有section添加动画
+            const sections = document.querySelectorAll('.demo-section, .install-section');
+            sections.forEach(section => {
+                section.style.opacity = '0';
+                section.style.transform = 'translateY(30px)';
+                section.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                observer.observe(section);
+            });
+        });
+    </script>
+</body>
+</html>

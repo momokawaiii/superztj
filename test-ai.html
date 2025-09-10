@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI服务测试页面</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .btn:hover {
+            background: #0056b3;
+        }
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 5px;
+            white-space: pre-wrap;
+        }
+        .success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .loading {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+        }
+        .status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 3px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .status.online {
+            background: #d4edda;
+            color: #155724;
+        }
+        .status.offline {
+            background: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🤖 AI服务测试页面</h1>
+        <p>这个页面用于测试AI服务是否正常工作，不会再出现卡住的问题。</p>
+        
+        <div class="test-section">
+            <h3>1. 服务状态检查</h3>
+            <p>检查基础服务是否正常运行</p>
+            <button class="btn" onclick="testHealthCheck()">检查服务状态</button>
+            <button class="btn" onclick="testBasicRoute()">测试基础路由</button>
+            <div id="healthResult" class="result" style="display: none;"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>2. AI题目生成测试</h3>
+            <p>测试AI题目生成功能，包含超时保护</p>
+            <button class="btn" onclick="testQuizGeneration(1)">生成示例题目 (材料1)</button>
+            <button class="btn" onclick="testQuizGeneration(999)">测试不存在材料</button>
+            <button class="btn" onclick="testQuizGenerationWithTimeout()">测试超时处理</button>
+            <div id="quizResult" class="result" style="display: none;"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>3. 实时状态监控</h3>
+            <p>服务状态: <span id="serviceStatus" class="status offline">离线</span></p>
+            <p>最后检查时间: <span id="lastCheck">未检查</span></p>
+            <button class="btn" onclick="startMonitoring()">开始监控</button>
+            <button class="btn" onclick="stopMonitoring()">停止监控</button>
+        </div>
+
+        <div class="test-section">
+            <h3>4. 性能测试</h3>
+            <p>测试连续请求和并发处理能力</p>
+            <button class="btn" onclick="testPerformance()">连续生成5道题目</button>
+            <button class="btn" onclick="testConcurrent()">并发测试 (3个请求)</button>
+            <div id="performanceResult" class="result" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script>
+        let monitoringInterval = null;
+
+        // 显示结果
+        function showResult(elementId, message, type = 'success') {
+            const element = document.getElementById(elementId);
+            element.className = `result ${type}`;
+            element.textContent = message;
+            element.style.display = 'block';
+        }
+
+        // 测试健康检查
+        async function testHealthCheck() {
+            showResult('healthResult', '正在检查服务状态...', 'loading');
+            
+            try {
+                const startTime = Date.now();
+                const response = await fetch('/api/quiz/health-check');
+                const endTime = Date.now();
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResult('healthResult', 
+                        `✅ 服务正常\n响应时间: ${endTime - startTime}ms\n响应数据: ${JSON.stringify(data, null, 2)}`, 
+                        'success'
+                    );
+                    updateServiceStatus(true);
+                } else {
+                    showResult('healthResult', `❌ 服务异常: ${data.message}`, 'error');
+                    updateServiceStatus(false);
+                }
+            } catch (error) {
+                showResult('healthResult', `❌ 连接失败: ${error.message}`, 'error');
+                updateServiceStatus(false);
+            }
+        }
+
+        // 测试基础路由
+        async function testBasicRoute() {
+            showResult('healthResult', '正在测试基础路由...', 'loading');
+            
+            try {
+                const startTime = Date.now();
+                const response = await fetch('/api/quiz/test');
+                const endTime = Date.now();
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResult('healthResult', 
+                        `✅ 基础路由正常\n响应时间: ${endTime - startTime}ms\n响应数据: ${JSON.stringify(data, null, 2)}`, 
+                        'success'
+                    );
+                } else {
+                    showResult('healthResult', `❌ 路由异常: ${data.message}`, 'error');
+                }
+            } catch (error) {
+                showResult('healthResult', `❌ 路由测试失败: ${error.message}`, 'error');
+            }
+        }
+
+        // 测试题目生成
+        async function testQuizGeneration(materialId) {
+            showResult('quizResult', `正在生成题目 (材料ID: ${materialId})...`, 'loading');
+            
+            try {
+                const startTime = Date.now();
+                const response = await fetch(`/api/quiz/generate/${materialId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        questionType: 'mixed',
+                        count: 5,
+                        difficulty: 1
+                    })
+                });
+                
+                const endTime = Date.now();
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    const questions = data.data.questions;
+                    showResult('quizResult', 
+                        `✅ 题目生成成功!\n` +
+                        `响应时间: ${endTime - startTime}ms\n` +
+                        `生成题目数量: ${questions.length}\n` +
+                        `题目类型: ${questions.map(q => q.type).join(', ')}\n` +
+                        `示例题目: ${questions[0]?.question || '无'}`, 
+                        'success'
+                    );
+                } else {
+                    showResult('quizResult', 
+                        `⚠️ 生成失败但有响应\n` +
+                        `响应时间: ${endTime - startTime}ms\n` +
+                        `错误信息: ${data.message}\n` +
+                        `完整响应: ${JSON.stringify(data, null, 2)}`, 
+                        'error'
+                    );
+                }
+            } catch (error) {
+                showResult('quizResult', `❌ 请求失败: ${error.message}`, 'error');
+            }
+        }
+
+        // 测试超时处理
+        async function testQuizGenerationWithTimeout() {
+            showResult('quizResult', '测试超时处理机制...', 'loading');
+            
+            // 设置一个较短的超时来测试
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 5000); // 5秒超时
+            
+            try {
+                const startTime = Date.now();
+                const response = await fetch('/api/quiz/generate/999', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        questionType: 'mixed',
+                        count: 10,
+                        difficulty: 1
+                    }),
+                    signal: controller.signal
+                });
+                
+                clearTimeout(timeoutId);
+                const endTime = Date.now();
+                const data = await response.json();
+                
+                showResult('quizResult', 
+                    `✅ 超时测试完成\n` +
+                    `响应时间: ${endTime - startTime}ms\n` +
+                    `状态: ${response.status}\n` +
+                    `响应: ${JSON.stringify(data, null, 2)}`, 
+                    'success'
+                );
+            } catch (error) {
+                clearTimeout(timeoutId);
+                if (error.name === 'AbortError') {
+                    showResult('quizResult', '✅ 超时机制正常工作 - 请求被中止', 'success');
+                } else {
+                    showResult('quizResult', `❌ 超时测试失败: ${error.message}`, 'error');
+                }
+            }
+        }
+
+        // 性能测试
+        async function testPerformance() {
+            showResult('performanceResult', '开始性能测试 - 连续生成5道题目...', 'loading');
+            
+            const results = [];
+            const startTime = Date.now();
+            
+            for (let i = 1; i <= 5; i++) {
+                try {
+                    const reqStart = Date.now();
+                    const response = await fetch(`/api/quiz/generate/${i}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ questionType: 'mixed', count: 3, difficulty: 1 })
+                    });
+                    const reqEnd = Date.now();
+                    const data = await response.json();
+                    
+                    results.push({
+                        request: i,
+                        time: reqEnd - reqStart,
+                        success: response.ok && data.success,
+                        questions: data.data?.questions?.length || 0
+                    });
+                } catch (error) {
+                    results.push({
+                        request: i,
+                        time: 0,
+                        success: false,
+                        error: error.message
+                    });
+                }
+            }
+            
+            const totalTime = Date.now() - startTime;
+            const successCount = results.filter(r => r.success).length;
+            const avgTime = results.reduce((sum, r) => sum + r.time, 0) / results.length;
+            
+            showResult('performanceResult', 
+                `✅ 性能测试完成\n` +
+                `总耗时: ${totalTime}ms\n` +
+                `成功率: ${successCount}/5 (${(successCount/5*100).toFixed(1)}%)\n` +
+                `平均响应时间: ${avgTime.toFixed(1)}ms\n` +
+                `详细结果:\n${results.map(r => 
+                    `请求${r.request}: ${r.success ? '✅' : '❌'} ${r.time}ms ${r.questions ? `(${r.questions}题)` : r.error || ''}`
+                ).join('\n')}`, 
+                successCount >= 4 ? 'success' : 'error'
+            );
+        }
+
+        // 并发测试
+        async function testConcurrent() {
+            showResult('performanceResult', '开始并发测试 - 同时发送3个请求...', 'loading');
+            
+            const startTime = Date.now();
+            
+            const promises = [1, 2, 3].map(async (id) => {
+                try {
+                    const reqStart = Date.now();
+                    const response = await fetch(`/api/quiz/generate/${id}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ questionType: 'mixed', count: 3, difficulty: 1 })
+                    });
+                    const reqEnd = Date.now();
+                    const data = await response.json();
+                    
+                    return {
+                        id,
+                        time: reqEnd - reqStart,
+                        success: response.ok && data.success,
+                        questions: data.data?.questions?.length || 0
+                    };
+                } catch (error) {
+                    return {
+                        id,
+                        time: 0,
+                        success: false,
+                        error: error.message
+                    };
+                }
+            });
+            
+            try {
+                const results = await Promise.all(promises);
+                const totalTime = Date.now() - startTime;
+                const successCount = results.filter(r => r.success).length;
+                const maxTime = Math.max(...results.map(r => r.time));
+                const minTime = Math.min(...results.map(r => r.time));
+                
+                showResult('performanceResult', 
+                    `✅ 并发测试完成\n` +
+                    `总耗时: ${totalTime}ms\n` +
+                    `成功率: ${successCount}/3 (${(successCount/3*100).toFixed(1)}%)\n` +
+                    `最快响应: ${minTime}ms\n` +
+                    `最慢响应: ${maxTime}ms\n` +
+                    `详细结果:\n${results.map(r => 
+                        `请求${r.id}: ${r.success ? '✅' : '❌'} ${r.time}ms ${r.questions ? `(${r.questions}题)` : r.error || ''}`
+                    ).join('\n')}`, 
+                    successCount >= 2 ? 'success' : 'error'
+                );
+            } catch (error) {
+                showResult('performanceResult', `❌ 并发测试失败: ${error.message}`, 'error');
+            }
+        }
+
+        // 更新服务状态
+        function updateServiceStatus(isOnline) {
+            const statusElement = document.getElementById('serviceStatus');
+            const lastCheckElement = document.getElementById('lastCheck');
+            
+            statusElement.textContent = isOnline ? '在线' : '离线';
+            statusElement.className = `status ${isOnline ? 'online' : 'offline'}`;
+            lastCheckElement.textContent = new Date().toLocaleString();
+        }
+
+        // 开始监控
+        function startMonitoring() {
+            if (monitoringInterval) return;
+            
+            monitoringInterval = setInterval(async () => {
+                try {
+                    const response = await fetch('/api/quiz/health-check');
+                    updateServiceStatus(response.ok);
+                } catch (error) {
+                    updateServiceStatus(false);
+                }
+            }, 5000); // 每5秒检查一次
+            
+            // 立即执行一次
+            testHealthCheck();
+        }
+
+        // 停止监控
+        function stopMonitoring() {
+            if (monitoringInterval) {
+                clearInterval(monitoringInterval);
+                monitoringInterval = null;
+            }
+        }
+
+        // 页面加载时自动检查一次
+        window.addEventListener('load', () => {
+            testHealthCheck();
+        });
+    </script>
+</body>
+</html>
